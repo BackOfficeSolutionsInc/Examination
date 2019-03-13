@@ -1,0 +1,240 @@
+﻿@using Examination.Models.Examiner
+@model List<ExaminerModel>
+@{
+    Layout = null;
+}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html>
+
+<head>
+    @Styles.Render("~/Content/style")
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    @*<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />*@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    @*<link type="text/css" rel="stylesheet" href="style/main.css">*@
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	@Html.Hidden("ApiServer", ViewData["ApiServer"])
+</head>
+
+<body>
+    <div class="container">
+        <h1>Review Exam</h1>
+        <div class="inner">
+            <form class="col s12">
+                <div class="input-field col s6">
+                    <input list="suggestionList" id="answerInput">
+                    <datalist id="suggestionList">
+                        @foreach (var item in Model)
+                        {
+                            <option data-value=@item.Id>@item.Name()</option>
+                        }
+                    </datalist>
+
+ 
+                    <input id="answerInput-hidden" type="hidden" name="answer" class="validate" placeholder="Review Exam">
+
+                </div>
+                <div id="mainDiv"> </div>
+                <div class="save">
+                    <button class="btn waves-effect waves-light red btn-large" id="save" type="button"
+                            name="action">
+                        Submit
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @*@{
+        List<SelectListItem> listItems = new List<SelectListItem>();
+                foreach(var item in Model) {
+                listItems.Add(new SelectListItem {
+                Text = item.Name(),
+                Value = item.Id
+                });
+                }
+                }*@
+    @*<input list="Examiner" name="Examiner">
+        <datalist id="Examiner">
+            @foreach (var item in Model) {
+            <option value=@item.Id>@item.Name()</option>
+            }
+        </datalist>*@
+    @*<div class="form-group">
+            @Html.Label("Examiner", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.DropDownList("Examiner", listItems, htmlAttributes: new { @class = "form-control", id =
+                "Examiner" })
+                @Html.ValidationMessage("Examiner", "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+    <!--JavaScript at end of body for optimized loading-->
+    @*<script type="text/javascript" src="js/materialize.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+</html>
+<script>
+        document.querySelector('input[list]').addEventListener('input', function (e) {
+            var input = e.target,
+                list = input.getAttribute('list'),
+                options = document.querySelectorAll('#' + list + ' option'),
+                hiddenInput = document.getElementById(input.id + '-hidden'),
+                inputValue = input.value;
+
+            hiddenInput.value = inputValue;
+            $("#mainDiv").empty();
+            for (var i = 0; i < options.length; i++) {
+                var option = options[i];
+
+                if (option.innerText === inputValue) {
+                    hiddenInput.value = option.getAttribute('data-value');
+                    generateExam(hiddenInput.value);
+                    break;
+                }
+            }
+        });
+
+        $('#save').click(function (e) {
+            saveExamResult();
+        });
+        function generateExam(id) {
+
+
+            var source = { "Id": id }
+            $.ajax({
+
+                type: "POST",
+                //url: "http://localhost:53536/api/Review",
+                //url: "http://localhost:53536/api/User",
+                //url: "http://cons:63899/api/User",
+                url: $("#ApiServer").val() + "/api/Review",
+                data: JSON.stringify(source),
+                //data: "1",
+                contentType: 'application/json; charset=utf-8',
+
+                dataType: 'json',
+
+                success: function (data) {
+
+                    var str = "";
+
+                    str = "<Table id='mytable'><th style='display:none;'>Id</th><th>Item</th><th>Question</th><th>Answer</th><th>Right</th><th>Wrong</th><Tbody>";
+
+                    for (i = 0; i < data.length; i++) {
+                        str += "<tr>";
+                        str += "<td style='display:none;'>";
+                        str += data[i].Id
+                        str += "</td>";
+                        str += "<td>";
+                        str += data[i].ItemNo
+                        str += "</td>";
+                        str += "<td>";
+                        str += data[i].Question
+                        str += "</td>";
+                        str += "<td>";
+                        str += data[i].ExaminerAnswer
+                        str += "</td>";
+                        str += "<td>";
+                        str += "<label>";
+                        str += "<input type='radio' name='group" + data[i].ItemNo + "' id='radio" + data[i].ItemNo + "'>";
+                        str += "<span></span>";
+                        str += "</label>";
+                        str += "</td>";
+                        str += "<td>";
+                        str += "<label>";
+                        str += "<input type='radio' name='group" + data[i].ItemNo + "'>"
+                        str += "<span></span>";
+                        str += "</label>";
+                        str += "</td>";
+                        str += "<td>";
+                        str += "<input type='text' id='remarks" + data[i].ItemNo + "'>"
+                        str += "</td>";
+                        str += "</tr>";
+                    }
+                    str += "</Tbody></Table>";
+
+                    var d1 = document.getElementById('mainDiv');
+                    d1.insertAdjacentHTML('afterBegin', str);
+
+
+                },
+
+                error: function (error) {
+                    alert(error);
+                    jsonValue = jQuery.parseJSON(error.responseText);
+
+                }
+
+            });
+
+
+        }
+
+        function saveExamResult() {
+            var source;
+            var firsRow = true;
+            var IsNotHeader = false;
+            $('#mytable tr').each(function () {
+                if (IsNotHeader) {
+
+                    var itemno = $(this).find("td").eq(1).html();
+                    var remarks = $("#remarks" + itemno).val();;
+                    var IsCorrect = $("#radio" + itemno).prop("checked");
+                    if (firsRow) {
+                        source = [{
+                            "Id": $(this).find("td").eq(0).html(),
+                            "Remarks": remarks,
+                            "IsCorrect": IsCorrect,
+                            "AlreadyReview": true
+                        }];
+                        firsRow = false;
+                    } else {
+                        source.push({
+                            "Id": $(this).find("td").eq(0).html(),
+                            "Remarks": remarks,
+                            "IsCorrect": IsCorrect,
+                            "AlreadyReview": true
+                        });
+                    }
+                } else {
+                    IsNotHeader = true;
+                }
+
+
+            });
+            $.ajax({
+
+                type: "POST",
+                //url: "http://localhost:53536/api/SaveReview",
+                //url: "http://localhost:53536/api/User",
+                //url: "http://cons:63899/api/User",
+            	//url: "http://192.168.88.25:9000/api/User",
+                url: $("#ApiServer").val() + "/api/SaveReview",
+                data: JSON.stringify(source),
+                //data: "1",
+                contentType: 'application/json; charset=utf-8',
+
+                dataType: 'json',
+
+                success: function (data) {
+                    alert("success");
+
+
+                },
+
+                error: function (error) {
+                    alert(error);
+                    jsonValue = jQuery.parseJSON(error.responseText);
+
+                }
+
+            });
+        }
+
+</script>

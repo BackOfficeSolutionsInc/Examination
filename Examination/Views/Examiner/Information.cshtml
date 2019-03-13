@@ -1,0 +1,145 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    @Styles.Render("~/Content/style")
+    <title>Information</title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+   
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	@Styles.Render("~/Content/style")
+	@Html.Hidden("ApiServer", ViewData["ApiServer"])
+
+</head>
+
+<body>
+	<script>
+    $(function () {
+        $("#datepicker").datepicker();
+    });
+	</script>
+    <div class="container">
+        <h1> Sign Up</h1>
+        <div class="inner">
+            <div class="title">
+                <h2>Please fill up the form before taking the exam</h2>
+            </div>
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="FirstName" type="text" class="validate">
+                            <label for="FirstName">First Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="Lastname" type="text" class="validate">
+                            <label for="Lastname">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input id="Middlename" type="text" class="validate">
+                            <label for="Middlename">Middle Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input type="text" class="datepicker" id="datepicker">
+                            <label for="dateofbirth">Date of Birth</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">location_on</i>
+                            <textarea id="Address" class="materialize-textarea"></textarea>
+                            <label for="icon_prefix2">Address</label>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="back">
+            <button class="btn waves-effect waves-light green btn-large left" type="button" id="back" name="action">
+                Back
+                <i class="material-icons left">chevron_left</i>
+            </button>
+        </div>
+        <div class="exam">
+        <button class="btn waves-effect waves-light red btn-large right" type="submit" id="exam" name="action">
+            Take Exam
+            <i class="material-icons right">send</i>
+        </button>
+            </div>
+    </div>
+    
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        const Calendar = document.querySelector('.datepicker');
+        M.Datepicker.init(Calendar, {});
+
+    </script>
+    <script>
+		$('#back').click(function (e) {
+			window.location.href = '/Menu';
+		});
+        $('#exam').click(function (e) {
+            
+            e.preventDefault();
+            var source = {
+                "Lastname": $("#Lastname").val(),
+                "FirstName": $("#FirstName").val(),
+                "Middlename": $("#Middlename").val(),
+                "bday": $("#datepicker").val(),
+                "Address": $("#Address").val()
+            };
+           
+            jQuery.support.cors = false;
+            $.ajax({
+
+                type: "POST",
+                //url: "http://localhost:53536/api/Register",
+                //url: "http://localhost:53536/api/User",
+                //url: "http://cons:63899/api/User",
+                url: $("#ApiServer").val() + "/api/Register",
+                data: JSON.stringify(source),
+                //data: "1",
+                contentType: 'application/json; charset=utf-8',
+
+                dataType: 'json',
+
+                success: function (data) {
+                    alert("success");
+                    window.location.href = '/Exam/Index/' + data;
+
+                },
+
+                error: function (error) {
+                    alert(error);
+                    jsonValue = jQuery.parseJSON(error.responseText);
+
+                    //jError('An error has occurred while saving the new part source: ' + jsonValue, { TimeShown: 3000 });
+
+                }
+
+            });
+
+
+
+        });
+    </script>
+</body>
+</html>

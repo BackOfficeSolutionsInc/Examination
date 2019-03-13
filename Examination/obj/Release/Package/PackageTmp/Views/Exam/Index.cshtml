@@ -1,0 +1,149 @@
+﻿
+@using Examination.Models;
+@{
+	Layout = null;
+}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!DOCTYPE html>
+@{
+	IList<QuestionsModel> data = (IList<QuestionsModel>)ViewData["questions"];
+	int counter = 0;
+	string hide = "";
+
+		}
+<html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      @*<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>*@
+      @*<link type="text/css" rel="stylesheet" href="style/main.css">*@
+      <!--Let browser know website is optimized for mobile-->
+	
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+	@Styles.Render("~/Content/style")
+    <body>
+		@Html.Hidden("examiner", ViewData["Id"])
+		@Html.Hidden("ApiServer", ViewData["ApiServer"])
+	 <div class="container">
+         <h1>Question</h1>
+	 @foreach (var x in data) {
+					if (counter != 0) {
+
+						hide = " <div class='inner' style='display:none' id='div" + counter + "'>";
+					} else {
+						hide = " <div class='inner' id='div" + counter + "'>";
+					}
+					var myHtmlString = new HtmlString(hide); 
+					@myHtmlString
+
+
+					hide = "<div class='id' id='QuestionId" + counter + "' style='display:none'  >" + x.Id + "</div>";
+					myHtmlString = new HtmlString(hide);
+					@myHtmlString
+					 hide = "<div class='itemNumber" + counter + "' id='itemNumber'>" + x.ItemNo + "</div>";
+					myHtmlString = new HtmlString(hide);
+					@myHtmlString
+					 <div class="question"><p>@x.Question</p></div>
+	   <p> </p>
+	   <div class="row">
+	   	<form class="col s12">
+	   		<div class="row">
+	   			<div class="input-field col s11">
+	   				<i class="material-icons prefix">mode_edit</i>
+	   				@{hide = "<textarea id='icon_prefix2' name='ExaminerAnswer" + counter + "' class='materialize-textarea'></textarea>";
+						
+						myHtmlString = new HtmlString(hide);
+			}
+			@myHtmlString
+
+					@{ hide = "<label for= 'icon_prefix2'> Answer </ label >";
+						myHtmlString = new HtmlString(hide);
+		}
+		@myHtmlString
+	   </div>
+
+	   		</div>
+	   	</form>
+	   </div>
+       						myHtmlString = new HtmlString("</div>");
+
+		@myHtmlString
+		counter += 1;
+	 }
+	 	@{counter -= 1;}
+	 	@Html.Hidden("lastCounter", counter)
+	 	@*<hidden id="lastCounter">@counter</hidden>*@
+         <div id="btn">
+	 	    <a class="waves-effect waves-light btn button red btn-large" id="next">
+	 		    <i class="material-icons right">chevron_right</i><span id="nxt">Next</span>
+	 	    </a>
+         </div>
+      </div>
+		<script>
+			var currentItem = 0;
+			$('#next').click(function (e) {
+				
+				e.preventDefault();
+				
+				$('#div' + currentItem).attr("style", "display:none");
+				
+				if (currentItem <parseInt($("#lastCounter").val())) {
+					currentItem += 1;
+					$('#div' + currentItem).attr("style", "display:block");
+					if (currentItem == parseInt($("#lastCounter").val())) {
+						$("#nxt").text("Done");
+					}
+				} else {
+					
+					var source = [{ "ExaminerAnswer": $('textarea[name="ExaminerAnswer0"]').val(), "ExaminerModel_id": $("#examiner").val(), "QuestionsModel_id": $("#QuestionId0").text() }];
+
+					
+					for (var i = 1; i <= currentItem; i++) {
+						source.push({ "ExaminerAnswer": $('textarea[name="ExaminerAnswer' + i + '"]').val(), "ExaminerModel_id": $("#examiner").val(), "QuestionsModel_id": $("#QuestionId" + i).text() });
+					}
+					
+					jQuery.support.cors = false;
+					$.ajax({
+
+					    type: "POST",
+					    //url: "http://localhost:53536/api/Exam",
+					    //url: "http://localhost:53536/api/User",
+					    //url: "http://cons:63899/api/User",
+					    url: $("#ApiServer").val() + "/api/Exam",
+					    data: JSON.stringify(source),
+					    //data: "1",
+					    contentType: 'application/json; charset=utf-8',
+
+					    dataType: 'json',
+
+					    success: function(data) {
+					        alert("success");
+					        window.location.href = '/Exam/EndExam';
+
+					    },
+
+					    error: function(error) {
+					        alert(error);
+					        jsonValue = jQuery.parseJSON(error.responseText);
+
+					    }
+
+					});
+
+
+				}
+			});
+
+		</script>
+    
+      <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
+    </body>
+  </html>
+

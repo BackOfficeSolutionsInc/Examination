@@ -1,0 +1,146 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    @Styles.Render("~/Content/style")
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    @*<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />*@
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    @*<link type="text/css" rel="stylesheet" href="style/main.css">*@
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	@Html.Hidden("ApiServer", ViewData["ApiServer"])
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Create Questionnaire</h1>
+        <div class="inner">
+            <div class="add"><a class="btn-floating btn-large waves-effect waves-light green pulse"><i class="material-icons">add</i></a></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item No.</th>
+                        <th>Subject Matters and Basic Questionnaires</th>
+                        <th>Answres</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <form class="col s12">
+                                    <div class="row">
+                                        <div class="input-field col s6">
+                                            <input id="itemno" type="number" class="validate">
+                                            <label for="number">Item No.</label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <form class="col s12">
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <i class="material-icons prefix">mode_edit</i>
+                                            <textarea id="icon_prefix2" name="question" class="materialize-textarea"></textarea>
+                                            <label for="textarea1">Write a question</label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <form class="col s12">
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <i class="material-icons prefix">mode_edit</i>
+                                            <textarea id="icon_prefix2" name="answer" class="materialize-textarea"></textarea>
+                                            <label for="textarea2">Answer</label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+           </div>
+            <div id="btn">
+            <button class="btn waves-effect waves-dark red btn-large" type="button" id="add" name="action">
+                Submit
+                <i class="material-icons right">send</i>
+            </button>
+        </div>
+        </div>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        $('#add').click(function(e) {
+        	
+            e.preventDefault();
+
+            var source = {
+                "ItemNo": $("#itemno").val(),
+                "Question": $('textarea[name="question"]').val(),
+                "Answers": $('textarea[name="answer"]').val()
+            };
+			
+          
+
+            jQuery.support.cors = false;
+            $.ajax({
+
+                type: "POST",
+                //url: "http://localhost:53536/api/CreateQuestions",
+                //url: "http://localhost:53536/api/User",
+                //url: "http://cons:63899/api/User",
+                url: $("#ApiServer").val() + "/api/CreateQuestions",
+                data: JSON.stringify(source),
+                //data: "1",
+                contentType: 'application/json; charset=utf-8',
+
+                dataType: 'json',
+
+                success: function(data) {
+                    alert("success");
+                    $("#itemno").val('');
+                    $("#question").val('');
+                    $("#answer").val('');
+
+                },
+
+                error: function(error) {
+                    alert(error);
+                    jsonValue = jQuery.parseJSON(error.responseText);
+
+                    //jError('An error has occurred while saving the new part source: ' + jsonValue, { TimeShown: 3000 });
+
+                }
+
+            });
+
+
+
+        });
+
+    </script>
+</body>
+</html>
+
