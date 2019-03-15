@@ -16,7 +16,7 @@ namespace Examination.Models {
 		public virtual string Answers { get; set; }
 		public QuestionsModel() {
 			
-			CreateTime = DateTime.UtcNow;
+			CreateTime = DateTime.Now;
 		}
 
 		public virtual DateTime CreateTime { get; set; }

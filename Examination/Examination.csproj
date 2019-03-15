@@ -164,6 +164,7 @@
     <Content Include="Content\images\review.svg" />
     <Content Include="Content\style\main.css" />
     <Content Include="Content\style\menu.css" />
+    <Content Include="Content\style\thankyou.css" />
     <Content Include="Global.asax" />
     <Content Include="scripts\ai.0.22.9-build00167.js" />
     <Content Include="scripts\ai.0.22.9-build00167.min.js" />
