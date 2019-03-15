@@ -26,8 +26,10 @@ namespace Examination.Accessor.Exam {
 				using (var tx = db.BeginTransaction()) {
 					var question = db.Get<QuestionsModel>(exam.QuestionsModel_id);
 					question.exam.Add(exam);
-
-					db.SaveOrUpdate(question);
+					if (question.CreateTime == DateTime.MinValue) {
+						question.CreateTime = DateTime.Now;
+					}
+						db.SaveOrUpdate(question);
 					tx.Commit();
 					db.Flush();
 				}

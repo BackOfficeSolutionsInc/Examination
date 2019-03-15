@@ -211,10 +211,11 @@
             $.ajax({
 
                 type: "POST",
-                url: "http://localhost:53536/api/SaveReview",
+                //url: "http://localhost:53536/api/SaveReview",
                 //url: "http://localhost:53536/api/User",
                 //url: "http://cons:63899/api/User",
-                //url: "http://192.168.88.25:9000/api/User",
+            	//url: "http://192.168.88.25:9000/api/User",
+                url: $("#ApiServer").val() + "/api/SaveReview",
                 data: JSON.stringify(source),
                 //data: "1",
                 contentType: 'application/json; charset=utf-8',
